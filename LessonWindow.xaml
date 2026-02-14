@@ -1,0 +1,82 @@
+﻿<Window x:Class="LearnCodeWPF.LessonWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Урок" 
+        Height="700" Width="900"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="White">
+            <Grid>
+                <Button Content="←" 
+                        FontSize="20" 
+                        FontWeight="Bold"
+                        Foreground="#646464"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        HorizontalAlignment="Left"
+                        Margin="20,0"
+                        Click="BackButton_Click"/>
+
+                <TextBlock Text="{Binding LessonTitle}" 
+                           FontSize="18" 
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Row="1" Background="White">
+            <StackPanel VerticalAlignment="Center" 
+                        HorizontalAlignment="Center">
+                <TextBlock Text="Введение" 
+                           FontSize="24" 
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,30"/>
+
+                <Border BorderBrush="#E0E0E0" 
+                        BorderThickness="1" 
+                        Width="700" 
+                        Height="300"
+                        CornerRadius="4">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <TextBlock x:Name="txtTheory" 
+                                   FontSize="14"
+                                   TextWrapping="Wrap"
+                                   Padding="20"/>
+                    </ScrollViewer>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Center"
+                            Margin="0,30,0,0">
+                    <Button Content="Справочник" 
+                            Background="#F0F0F0"
+                            Foreground="#646464"
+                            FontSize="12"
+                            Width="200" 
+                            Height="45"
+                            Margin="0,0,30,0"
+                            Click="GuideButton_Click"/>
+
+                    <Button Content="начать" 
+                            Background="#58B368"
+                            Foreground="White"
+                            FontSize="14" 
+                            FontWeight="Bold"
+                            Width="200" 
+                            Height="50"
+                            Click="StartButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
