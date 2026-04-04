@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Data;
-
 namespace LearnCodeWPF
 {
     public partial class QuizWindow : Window
     {
         private int currentQuestion = 0;
         private int score = 0;
-        private DataRow[] questions;
         private string course;
         private int lessonNumber;
         private List<RadioButton> singleChoiceButtons = new List<RadioButton>();
         private List<CheckBox> multipleChoiceBoxes = new List<CheckBox>();
         private TextBox textAnswer;
-
         public QuizWindow(int lessonNum, string crs)
         {
             lessonNumber = lessonNum;
@@ -26,69 +23,50 @@ namespace LearnCodeWPF
             LoadQuestions();
             LoadQuestion();
         }
-
+        private List<Question> questions; 
         private void LoadQuestions()
         {
             Database db = new Database();
             questions = db.GetQuestions(lessonNumber, course);
         }
-
         private void LoadQuestion()
         {
             optionsPanel.Children.Clear();
             singleChoiceButtons.Clear();
             multipleChoiceBoxes.Clear();
-
-            if (currentQuestion >= questions.Length)
+            if (questions == null || questions.Count == 0)
             {
                 FinishTest();
                 return;
             }
-
-            DataRow question = questions[currentQuestion];
-            txtQuestionNumber.Text = $"Вопрос {currentQuestion + 1}";
-            txtQuestion.Text = question["question_text"].ToString();
-            string questionType = question["question_type"].ToString();
-            string optionsText = question["options"].ToString();
-
-            if (questionType == "single")
+            if (currentQuestion >= questions.Count)
             {
-                txtInstruction.Text = "Выберите ответ.";
-                string[] options = optionsText.Split('|');
+                FinishTest();
+                return;
+            }
+            var question = questions[currentQuestion];
+            txtQuestionNumber.Text = $"Вопрос {currentQuestion + 1}";
+            txtQuestion.Text = question.QuestionText;
+            if (question.QuestionType == "choice")
+            {txtInstruction.Text = "Выберите ответ.";
+                string[] options = question.Options.Split('|');
                 foreach (var option in options)
                 {
                     var radio = new RadioButton
-                    {
-                        Content = option,
-                        FontSize = 14,
+                    {Content = option,
+                        FontSize = 24,
                         Margin = new Thickness(0, 5, 0, 5)
                     };
                     singleChoiceButtons.Add(radio);
                     optionsPanel.Children.Add(radio);
                 }
             }
-            else if (questionType == "multiple")
-            {
-                txtInstruction.Text = "Выберите ответ.";
-                string[] options = optionsText.Split('|');
-                foreach (var option in options)
-                {
-                    var checkBox = new CheckBox
-                    {
-                        Content = option,
-                        FontSize = 14,
-                        Margin = new Thickness(0, 5, 0, 5)
-                    };
-                    multipleChoiceBoxes.Add(checkBox);
-                    optionsPanel.Children.Add(checkBox);
-                }
-            }
-            else if (questionType == "text")
+            else if (question.QuestionType == "text")
             {
                 txtInstruction.Text = "Введите ответ.";
                 textAnswer = new TextBox
                 {
-                    FontSize = 16,
+                    FontSize = 20,
                     Height = 60,
                     Width = 700,
                     TextAlignment = TextAlignment.Center,
@@ -97,22 +75,38 @@ namespace LearnCodeWPF
                 };
                 optionsPanel.Children.Add(textAnswer);
             }
+            else if (question.QuestionType == "code")
+            {
+                txtInstruction.Text = "Напишите код, решающий задачу.";
+                var codeEditor = new TextBox
+                {
+                    AcceptsReturn = true,
+                    AcceptsTab = true,
+                    FontFamily = new System.Windows.Media.FontFamily("Consolas"),
+                    FontSize = 24,
+                    Height = 200,
+                    TextWrapping = TextWrapping.NoWrap,
+                    VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                };
+                optionsPanel.Children.Add(codeEditor);
+                textAnswer = codeEditor;
+                var runButton = new Button { Content = "Запустить код", Margin = new Thickness(0, 10, 0, 0) };
+                runButton.Click += async (senderObj, eventArgs) => await RunCodeAndCheck(codeEditor.Text);
+                optionsPanel.Children.Add(runButton);
+            }
         }
-
         private void SkipButton_Click(object sender, RoutedEventArgs e)
         {
             currentQuestion++;
             LoadQuestion();
         }
-
         private void CheckButton_Click(object sender, RoutedEventArgs e)
         {
-            DataRow question = questions[currentQuestion];
-            string correctAnswer = question["correct_answer"].ToString();
-            string questionType = question["question_type"].ToString();
+            var question = questions[currentQuestion];
+            string correctAnswer = question.CorrectAnswer;
+            string questionType = question.QuestionType;
             bool isCorrect = false;
-
-            if (questionType == "single")
+            if (questionType == "choice")
             {
                 foreach (var radio in singleChoiceButtons)
                 {
@@ -123,22 +117,6 @@ namespace LearnCodeWPF
                     }
                 }
             }
-            else if (questionType == "multiple")
-            {
-                string selected = "";
-                foreach (var checkBox in multipleChoiceBoxes)
-                {
-                    if (checkBox.IsChecked == true)
-                    {
-                        selected += checkBox.Content.ToString() + ",";
-                    }
-                }
-                selected = selected.TrimEnd(',');
-                if (selected == correctAnswer)
-                {
-                    isCorrect = true;
-                }
-            }
             else if (questionType == "text")
             {
                 if (textAnswer.Text.Trim().ToLower() == correctAnswer.ToLower())
@@ -146,23 +124,34 @@ namespace LearnCodeWPF
                     isCorrect = true;
                 }
             }
-
             if (isCorrect)
             {
                 score += 10;
                 ShowResultMessage("Правильно! +10 опыта", true);
-                Database db = new Database();
-                db.UpdateUserExperience(10);
             }
             else
             {
                 ShowResultMessage($"Неправильно. Правильный ответ: {correctAnswer}", false);
             }
-
             currentQuestion++;
             LoadQuestion();
         }
-
+        private async Task RunCodeAndCheck(string userCode)
+        {
+            var question = questions[currentQuestion];
+            string expected = question.CorrectAnswer.Trim();
+            string actual = await CodeRunner.RunCodeAsync(userCode, course); // course = "C#"/"C++"/"PHP"
+            if (actual == expected)
+            {
+                score += 10;
+                ShowResultMessage("Правильно! Код выдал верный вывод.", true);
+                currentQuestion++;
+                LoadQuestion();
+            }
+            else
+            {ShowResultMessage($"Неправильно. Ваш вывод:\n{actual}\n\nОжидалось:\n{expected}", false);
+            }
+        }
         private void ShowResultMessage(string message, bool isSuccess)
         {
             var resultWindow = new Window
@@ -174,13 +163,11 @@ namespace LearnCodeWPF
                 ResizeMode = ResizeMode.NoResize,
                 Background = Brushes.White
             };
-
             var stackPanel = new StackPanel
             {
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
-
             var label = new TextBlock
             {
                 Text = message,
@@ -190,7 +177,6 @@ namespace LearnCodeWPF
                 TextAlignment = TextAlignment.Center,
                 Margin = new Thickness(20)
             };
-
             var button = new Button
             {
                 Content = "OK",
@@ -200,20 +186,15 @@ namespace LearnCodeWPF
                 Height = 40,
                 Margin = new Thickness(0, 20, 0, 0)
             };
-
             button.Click += (s, e) => resultWindow.Close();
-
             stackPanel.Children.Add(label);
             stackPanel.Children.Add(button);
             resultWindow.Content = stackPanel;
             resultWindow.ShowDialog();
         }
-
         private void FinishTest()
         {
             Database db = new Database();
-            db.UnlockLesson(lessonNumber + 1, course);
-
             var resultWindow = new Window
             {
                 Title = "Тест завершен",
@@ -223,7 +204,6 @@ namespace LearnCodeWPF
                 ResizeMode = ResizeMode.NoResize,
                 Background = Brushes.White
             };
-
             var stackPanel = new StackPanel
             {
                 VerticalAlignment = VerticalAlignment.Center,
@@ -239,15 +219,13 @@ namespace LearnCodeWPF
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(0, 0, 0, 20)
             };
-
             var label2 = new TextBlock
             {
-                Text = $"Ваш результат: {score} из {questions.Length * 10}",
+                Text = $"Ваш результат: {score} из {questions.Count * 10}",
                 FontSize = 14,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(0, 0, 0, 10)
             };
-
             var label3 = new TextBlock
             {
                 Text = "Следующий урок разблокирован!",
@@ -256,7 +234,6 @@ namespace LearnCodeWPF
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(0, 0, 0, 30)
             };
-
             var button = new Button
             {
                 Content = "Вернуться к урокам",
@@ -267,7 +244,6 @@ namespace LearnCodeWPF
                 FontSize = 12,
                 FontWeight = FontWeights.Bold
             };
-
             button.Click += (s, e) =>
             {
                 resultWindow.Close();
@@ -275,7 +251,6 @@ namespace LearnCodeWPF
                 courseWindow.Show();
                 this.Close();
             };
-
             stackPanel.Children.Add(label1);
             stackPanel.Children.Add(label2);
             stackPanel.Children.Add(label3);
@@ -283,12 +258,9 @@ namespace LearnCodeWPF
             resultWindow.Content = stackPanel;
             resultWindow.ShowDialog();
         }
-
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             LessonWindow lessonWindow = new LessonWindow(lessonNumber, course);
             lessonWindow.Show();
             this.Close();
-        }
-    }
-}
+        }}}

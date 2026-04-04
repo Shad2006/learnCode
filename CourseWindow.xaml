@@ -40,7 +40,7 @@
                 BorderBrush="{StaticResource ColorSwan}" 
                 BorderThickness="0,0,2,0">
             <StackPanel>
-                <Button Content="LearnCode" 
+                <Button Content="SteP()" 
                         FontSize="24" 
                         FontWeight="Bold"
                         Foreground="{StaticResource ColorEel}"
@@ -52,7 +52,7 @@
                     <Button.ContentTemplate>
                         <DataTemplate>
                             <StackPanel>
-                                <TextBlock Text="LearnCode" 
+                                <TextBlock Text="SteP()" 
                                            FontSize="20"
                                            Foreground="{StaticResource ColorEel}"/>
                                 <TextBlock Text="программирование" 
@@ -202,7 +202,7 @@
                                 <TextBlock Text="1/3 задач решено" 
                                            FontSize="10"
                                            Foreground="{StaticResource ColorWolf}"
-                                           Margin="210,0"/>
+                                           Margin="210,0" Height="13" VerticalAlignment="Top"/>
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -212,10 +212,10 @@
                             CornerRadius="8" 
                             BorderBrush="#FBE56D" 
                             BorderThickness="2"
-                            Margin="0,0,0,20"
+                            Margin="0,0,0,0"
                             Height="100">
                         <Grid>
-                            <TextBlock Text="🔥" 
+                            <TextBlock Text="" 
                                        FontSize="28"
                                        VerticalAlignment="Center"
                                        Margin="20,0"/>
@@ -267,28 +267,34 @@
                                                 Padding="10,5"
                                                 Margin="0,0,0,20"
                                                 MouseEnter="LessonItem_MouseEnter"
-                                                MouseLeave="LessonItem_MouseLeave">
+                                                MouseLeave="LessonItem_MouseLeave"
+                                                MouseLeftButtonDown="LessonItem_Click">
+                                            
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="60"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="60"/>
                                                 </Grid.ColumnDefinitions>
-
                                                 <Ellipse Grid.Column="0" 
-                                                         Width="60" 
-                                                         Height="60"
-                                                         Fill="{Binding Color}">
+         Width="60" 
+         Height="60"
+         Fill="{Binding Color}">
+                                                    <Ellipse.RenderTransform>
+                                                        <ScaleTransform x:Name="EllipseScale" ScaleX="1" ScaleY="1"/>
+                                                    </Ellipse.RenderTransform>
                                                     <Ellipse.Triggers>
                                                         <EventTrigger RoutedEvent="MouseDown">
                                                             <BeginStoryboard>
                                                                 <Storyboard>
-                                                                    <DoubleAnimation To="0.9" 
-                                                                                     Duration="0:0:0.1"
-                                                                                     Storyboard.TargetProperty="ScaleX"/>
-                                                                    <DoubleAnimation To="0.9" 
-                                                                                     Duration="0:0:0.1"
-                                                                                     Storyboard.TargetProperty="ScaleY"/>
+                                                                    <DoubleAnimation Storyboard.TargetName="EllipseScale" 
+                                     Storyboard.TargetProperty="ScaleX" 
+                                     To="0.9" 
+                                     Duration="0:0:0.1"/>
+                                                                    <DoubleAnimation Storyboard.TargetName="EllipseScale" 
+                                     Storyboard.TargetProperty="ScaleY" 
+                                     To="0.9" 
+                                     Duration="0:0:0.1"/>
                                                                 </Storyboard>
                                                             </BeginStoryboard>
                                                         </EventTrigger>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LearnCode"
         mc:Ignorable="d"
-        Title="StartWindow" Height="450" Width="800">
+        Title="SteP() - добро пожаловать!" Height="450" Width="800">
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="Учите языки программирования бесплатно, весело и эффективно!" 

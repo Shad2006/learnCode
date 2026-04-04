@@ -1,12 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-
 namespace LearnCodeWPF
-{
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
+{public partial class MainWindow : Window
+    {public MainWindow()
         {
             InitializeComponent();
         }
@@ -36,7 +33,6 @@ namespace LearnCodeWPF
             }
 
             Database db = new Database();
-            db.AddUser(txtName.Text, selectedLevel, selectedCourse);
 
             CourseWindow courseWindow = new CourseWindow(selectedCourse);
             courseWindow.Show();
