@@ -75,6 +75,15 @@ namespace LearnCodeWPF
         }
         private void Logo_Click(object sender, RoutedEventArgs e)
         {
+            StartWindow win = new StartWindow();
+            win.Show();
+            this.Close();
+        }
+        private void Projects_Click(object sender, MouseButtonEventArgs e)
+        {
+            ProjectsWindow proj = new ProjectsWindow();
+            proj.Show();
+            this.Close();
         }
         private void LessonItem_Click(object sender, MouseButtonEventArgs e)
         {

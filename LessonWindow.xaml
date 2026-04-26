@@ -10,8 +10,6 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
-
-        <!-- Верхняя панель с заголовком и кнопкой назад -->
         <Border Grid.Row="0" Background="White" BorderBrush="LightGray" BorderThickness="0,0,0,2">
             <Grid>
                 <Button Content="← Назад" 
@@ -28,21 +26,24 @@
             </Grid>
         </Border>
 
-        <!-- Область теории с WebBrowser -->
         <WindowsFormsHost Grid.Row="1" Margin="20">
             <wf:WebBrowser x:Name="webBrowser"/>
         </WindowsFormsHost>
 
-        <!-- Кнопка перехода к вопросам -->
-        <Button Grid.Row="2" 
-                Content="Перейти к вопросам" 
-                Background="#58CC02" 
-                Foreground="White"
-                FontSize="16" 
-                FontWeight="Bold" 
-                Width="200" 
-                Height="50" 
-                HorizontalAlignment="Center"
-                Click="StartQuiz_Click"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+            <Button Content="Степан, обьясни иначе" 
+            Background="#FF9600" 
+            Foreground="White"
+            FontSize="14" FontWeight="Bold" 
+            Width="180" Height="50" 
+            Margin="0,0,20,0"
+            Click="ExplainSimpler_Click"/>
+            <Button Content="Перейти к вопросам" 
+            Background="#58CC02" 
+            Foreground="White"
+            FontSize="14" FontWeight="Bold" 
+            Width="180" Height="50"
+            Click="StartQuiz_Click"/>
+        </StackPanel>
     </Grid>
 </Window>

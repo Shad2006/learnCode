@@ -10,8 +10,6 @@
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- Header -->
         <Border Grid.Row="0" Background="White">
             <Grid>
                 <Button Content="←" 

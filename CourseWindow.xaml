@@ -40,24 +40,15 @@
                 BorderBrush="{StaticResource ColorSwan}" 
                 BorderThickness="0,0,2,0">
             <StackPanel>
-                <Button Content="SteP()" 
-                        FontSize="24" 
-                        FontWeight="Bold"
-                        Foreground="{StaticResource ColorEel}"
+                <Button
                         HorizontalAlignment="Left"
                         Margin="40,30,0,40"
-                        Background="Transparent"
-                        BorderThickness="0"
                         Click="Logo_Click">
+                    
                     <Button.ContentTemplate>
                         <DataTemplate>
                             <StackPanel>
-                                <TextBlock Text="SteP()" 
-                                           FontSize="20"
-                                           Foreground="{StaticResource ColorEel}"/>
-                                <TextBlock Text="программирование" 
-                                           FontSize="9"
-                                           Foreground="{StaticResource ColorMacaw}"/>
+                                <Image  Source="/images/step.png" Width="100px"></Image>
                             </StackPanel>
                         </DataTemplate>
                     </Button.ContentTemplate>
@@ -104,12 +95,14 @@
                             Height="45"
                             Margin="0,0,0,30"
                             MouseEnter="NavItem_MouseEnter"
-                            MouseLeave="NavItem_MouseLeave">
-                        <TextBlock Text="📁 Проекты" 
+                            MouseLeave="NavItem_MouseLeave"
+                            >
+                        <Button Content="📁 Проекты" 
                                    FontSize="16"
                                    Foreground="{StaticResource ColorHare}"
-                                   VerticalAlignment="Center"
-                                   Margin="10,0"/>
+                                   VerticalAlignment="Bottom"
+                                   Margin="10,0,10,10"
+                                   />
                     </Border>
                     <Border Background="{StaticResource ColorPolar}" 
                             CornerRadius="8" 
@@ -233,8 +226,6 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-
-                    <!-- Continue Button -->
                     <Button Content="НАЧАТЬ УРОК ПРОГРАММИРОВАНИЯ" 
                             Background="{StaticResource ColorOwl}"
                             Foreground="{StaticResource ColorSnow}"
@@ -269,7 +260,7 @@
                                                 MouseEnter="LessonItem_MouseEnter"
                                                 MouseLeave="LessonItem_MouseLeave"
                                                 MouseLeftButtonDown="LessonItem_Click">
-                                            
+
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="60"/>

@@ -111,7 +111,7 @@
                                     Background="White"
                                     CornerRadius="8"
                                     Margin="0,0,0,15">
-                                <Image Source="/images/php.png"
+                                <Image Source="./images/php.png"
                                        Stretch="Uniform"/>
                             </Border>
                             <TextBlock Text="PHP"

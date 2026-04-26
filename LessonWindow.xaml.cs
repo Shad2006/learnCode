@@ -86,4 +86,20 @@ namespace LearnCodeWPF
             courseWindow.Show();
             this.Close();
         }
-    }}
+
+        private void ExplainSimpler_Click(object sender, RoutedEventArgs e)
+        {
+            var lessons = db.GetLessons(course);
+            var currentLesson = lessons.FirstOrDefault(l => l.LessonNumber == lessonNumber);
+            if (currentLesson != null)
+            {
+                var explanationWindow = new ExplanationWindow(currentLesson.LessonName, currentLesson.TheoryText, course);
+                explanationWindow.Owner = this;
+                explanationWindow.ShowDialog();
+            }
+            else
+            {
+            }
+        }
+    }
+}

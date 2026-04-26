@@ -12,9 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using LearnCode;
-using LearnCodeWPF;
 using LearnCodeUWP;
-namespace LearnCode
+namespace LearnCodeWPF
 {
     /// <summary>
     /// Interaction logic for StartWindow.xaml
