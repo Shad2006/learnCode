@@ -34,7 +34,7 @@ namespace LearnCodeWPF
 
             Database db = new Database();
 
-            CourseWindow courseWindow = new CourseWindow(selectedCourse);
+            CourseWindow courseWindow = new CourseWindow(selectedCourse, "");
             courseWindow.Show();
             this.Close();
         }

@@ -28,7 +28,7 @@ namespace LearnCodeWPF
         public string ProgressPercent { get; set; } = "";
         public string ProgressDetails { get; set; } = "";
 
-        public CourseWindow(string selectedCourse)
+        public CourseWindow(string selectedCourse, string userName)
         {
             course = selectedCourse;
             CourseTitle = course;
@@ -36,6 +36,10 @@ namespace LearnCodeWPF
             InitializeComponent();
             DataContext = this;  
             LoadData();
+            if (userName != "")
+            {
+                UserFIO = userName;
+            }
         }
         private void LoadData()
         {
@@ -43,15 +47,30 @@ namespace LearnCodeWPF
             var lessonsData = db.GetLessons(course);
             foreach (var lesson in lessonsData)
             {
-                Lessons.Add(new LessonViewModel
+                if ((lesson.IsLocked) == true)
                 {
-                    LessonNumber = lesson.LessonNumber,
-                    Color = new SolidColorBrush(lessonColors[lesson.LessonNumber % lessonColors.Length]),
-                    LessonName = lesson.LessonName,
-                    TextColor = Brushes.Black,
-                    IsLocked = lesson.IsLocked,
-                    Icon = GetProgrammingIcon(lesson.LessonName)
-                });
+                    Lessons.Add(new LessonViewModel
+                    {
+                        LessonNumber = lesson.LessonNumber,
+                        LessonName = lesson.LessonName,
+                        TextColor = Brushes.Black,
+                        IsLocked = lesson.IsLocked,
+                        Color = Brushes.Gray,
+                        Icon = GetProgrammingIcon(lesson.LessonName)
+                    });
+                }
+                else
+                {
+                    Lessons.Add(new LessonViewModel
+                    {
+                        LessonNumber = lesson.LessonNumber,
+                        LessonName = lesson.LessonName,
+                        TextColor = Brushes.Black,
+                        IsLocked = lesson.IsLocked,
+                        Color = new SolidColorBrush(lessonColors[lesson.LessonNumber % lessonColors.Length]),
+                        Icon = GetProgrammingIcon(lesson.LessonName)
+                    });
+                }
             }
         }
 
@@ -89,11 +108,15 @@ namespace LearnCodeWPF
         {
             var border = sender as Border;
             var lesson = border?.DataContext as LessonViewModel;
-            if (lesson != null)
-            { 
-                LessonWindow lessonWindow = new LessonWindow(lesson.LessonNumber, course);
-                lessonWindow.Show();
-                this.Close();
+            if (lesson.IsLocked == true) { }
+            else
+            {
+                if (lesson != null)
+                {
+                    LessonWindow lessonWindow = new LessonWindow(lesson.LessonNumber, course, UserFIO);
+                    lessonWindow.Show();
+                    this.Close();
+                }
             }
         }
         private void NavItem_MouseEnter(object sender, MouseEventArgs e)
@@ -117,7 +140,7 @@ namespace LearnCodeWPF
             if (Lessons.Count > 0)
             {
                 int lessonNumber = Lessons[0].LessonNumber;
-                LessonWindow lessonWindow = new LessonWindow(lessonNumber, course);
+                LessonWindow lessonWindow = new LessonWindow(lessonNumber, course, UserFIO);
                 lessonWindow.Show();
                 this.Close();
             }

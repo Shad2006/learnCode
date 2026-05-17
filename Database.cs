@@ -2,47 +2,38 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
-
 namespace LearnCodeWPF
 {
-    // Модель урока
     public class Lesson
     {
         public int LessonNumber { get; set; }
         public string LessonName { get; set; }
         public string TheoryText { get; set; }
         public bool IsLocked { get; set; }
+        public string Course { get; set; }
     }
-
-    // Модель вопроса
     public class Question
     {
+        public int LessonNumber { get; set; }
+        public string Course { get; set; }
         public string QuestionText { get; set; }
-        public string QuestionType { get; set; }   // "text", "choice", "code"
+        public string QuestionType { get; set; }
         public string CorrectAnswer { get; set; }
-        public string Options { get; set; }        // для choice – варианты через '|'
+        public string Options { get; set; }
     }
-
     public class Database
     {
-        // Абсолютный путь к файлу БД – всегда в папке с EXE
         private readonly string connectionString;
-
         public Database()
         {
             string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "learning.db");
             connectionString = $"Data Source={dbPath};Version=3;Journal Mode=Wal;";
-
-            // Если файла нет – создаём и инициализируем таблицы
             if (!File.Exists(dbPath))
             {
                 SQLiteConnection.CreateFile(dbPath);
                 InitializeTables();
-                InsertSampleData(); // тестовые данные, можно закомментировать
             }
         }
-
-        // Создание таблиц, если их нет
         private void InitializeTables()
         {
             using (var connection = new SQLiteConnection(connectionString))
@@ -81,25 +72,6 @@ namespace LearnCodeWPF
                 }
             }
         }
-
-        // Вставить начальные данные (если нужно)
-        private void InsertSampleData()
-        {
-            // Проверим, есть ли уже уроки
-            var existing = GetLessons("C#");
-            if (existing.Count > 0) return;
-
-            // C# уроки
-            AddLesson(1, "Введение в C#", "C#", "Это вводный урок по C#. Здесь вы узнаете основы.", false);
-            AddLesson(2, "Переменные и типы данных", "C#", "Урок о переменных, типах int, string и т.д.", true);
-            AddLesson(3, "Условные операторы", "C#", "Изучите if, else и switch.", true);
-
-            // Вопросы для C# (урок 1)
-            AddQuestion(1, "C#", "Что такое переменная?", "text", "ячейка памяти", null);
-            AddQuestion(1, "C#", "Какой тип используется для целых чисел?", "choice", "int", "int|string|bool|double");
-        }
-
-        // ========== РАБОТА С УРОКАМИ ==========
         public List<Lesson> GetLessons(string course)
         {
             var lessons = new List<Lesson>();
@@ -127,7 +99,23 @@ namespace LearnCodeWPF
             }
             return lessons;
         }
-
+        public bool Auth(string login, string password)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "SELECT * FROM Students WHERE FIO = @login AND password = @password";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@login", login);
+                    cmd.Parameters.AddWithValue("@password", password);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        return reader.Read();
+                    }
+                }
+            }
+        }
         public void AddLesson(int lessonNumber, string lessonName, string course, string theoryText, bool isLocked)
         {
             using (var connection = new SQLiteConnection(connectionString))
@@ -145,8 +133,6 @@ namespace LearnCodeWPF
                 }
             }
         }
-
-        // ========== РАБОТА С ВОПРОСАМИ ==========
         public List<Question> GetQuestions(int lessonNumber, string course)
         {
             var questions = new List<Question>();
@@ -195,13 +181,11 @@ namespace LearnCodeWPF
             }
         }
 
-        // ========== ПРОГРЕСС ПОЛЬЗОВАТЕЛЯ ==========
         public void MarkLessonCompleted(int lessonNumber, string course, int score)
         {
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
-                // user_id = 1 (один пользователь, без регистрации)
                 string sql = @"INSERT OR REPLACE INTO UserProgress (user_id, lesson_number, course, completed, score)
                                VALUES (1, @ln, @c, 1, @score)";
                 using (var cmd = new SQLiteCommand(sql, connection))
@@ -229,8 +213,20 @@ namespace LearnCodeWPF
                 }
             }
         }
-
-        // Получить общий прогресс по курсу (количество завершённых уроков)
+        public void NextLesson(string course, int it)
+        {
+            using (var connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+                string sql = "UPDATE lessons SET is_locked=0 WHERE course = @c AND lesson_number=@ln";
+                using (var cmd = new SQLiteCommand(sql, connection))
+                {
+                    cmd.Parameters.AddWithValue("@ln", it + 1);
+                    cmd.Parameters.AddWithValue("@c", course);
+                    cmd.ExecuteScalar();
+                }
+            }
+        }
         public int GetCompletedLessonsCount(string course)
         {
             using (var connection = new SQLiteConnection(connectionString))
@@ -244,8 +240,6 @@ namespace LearnCodeWPF
                 }
             }
         }
-
-        // Получить общее количество уроков в курсе
         public int GetTotalLessonsCount(string course)
         {
             using (var connection = new SQLiteConnection(connectionString))
@@ -256,6 +250,148 @@ namespace LearnCodeWPF
                 {
                     cmd.Parameters.AddWithValue("@c", course);
                     return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+        }
+        public List<Question> GetAllQuestions()
+        {
+            var questions = new List<Question>();
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "SELECT lesson_number, course, question_text, question_type, correct_answer, options FROM Questions";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        questions.Add(new Question
+                        {
+                            LessonNumber = reader.GetInt32(0),
+                            Course = reader.GetString(1),
+                            QuestionText = reader.GetString(2),
+                            QuestionType = reader.GetString(3),
+                            CorrectAnswer = reader.GetString(4),
+                            Options = reader.IsDBNull(5) ? null : reader.GetString(5)
+                        });
+                    }
+                }
+            }
+            return questions;
+        }
+        public void UpdateLesson(Lesson lesson, string course)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "UPDATE Lessons SET lesson_name=@name, theory_text=@theory, is_locked=@lock WHERE lesson_number=@num AND course=@course";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@name", lesson.LessonName);
+                    cmd.Parameters.AddWithValue("@theory", lesson.TheoryText);
+                    cmd.Parameters.AddWithValue("@lock", lesson.IsLocked ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@num", lesson.LessonNumber);
+                    cmd.Parameters.AddWithValue("@course", course);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteLesson(int lessonNumber, string course)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "DELETE FROM Lessons WHERE lesson_number=@num AND course=@course";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@num", lessonNumber);
+                    cmd.Parameters.AddWithValue("@course", course);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void AddLessonComplete(Lesson lesson, string course)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "INSERT INTO Lessons (lesson_number, lesson_name, course, theory_text, is_locked) VALUES (@num, @name, @course, @theory, @lock)";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@num", lesson.LessonNumber);
+                    cmd.Parameters.AddWithValue("@name", lesson.LessonName);
+                    cmd.Parameters.AddWithValue("@course", course);
+                    cmd.Parameters.AddWithValue("@theory", lesson.TheoryText);
+                    cmd.Parameters.AddWithValue("@lock", lesson.IsLocked ? 1 : 0);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void UpdateQuestion(int lessonNumber, string course, string oldQuestionText, string newQuestionText, string type, string correctAnswer, string options)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = @"UPDATE Questions SET question_text=@newText, question_type=@type, correct_answer=@correct, options=@options 
+                       WHERE lesson_number=@ln AND course=@course AND question_text=@oldText";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@newText", newQuestionText);
+                    cmd.Parameters.AddWithValue("@type", type);
+                    cmd.Parameters.AddWithValue("@correct", correctAnswer);
+                    cmd.Parameters.AddWithValue("@options", options ?? "");
+                    cmd.Parameters.AddWithValue("@ln", lessonNumber);
+                    cmd.Parameters.AddWithValue("@course", course);
+                    cmd.Parameters.AddWithValue("@oldText", oldQuestionText);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteQuestion(int lessonNumber, string course, string questionText)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "DELETE FROM Questions WHERE lesson_number=@ln AND course=@course AND question_text=@text";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ln", lessonNumber);
+                    cmd.Parameters.AddWithValue("@course", course);
+                    cmd.Parameters.AddWithValue("@text", questionText);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void AddStudent(string name, string password)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "INSERT INTO Students  (FIO,password) VALUES (@fio, @password)";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@fio", name);
+                    cmd.Parameters.AddWithValue("@password", password);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void AddQuestionComplete(Question question, string course)
+        {
+            using (var conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string sql = @"INSERT INTO Questions (lesson_number, course, question_text, question_type, correct_answer, options) 
+                       VALUES (@ln, @course, @text, @type, @correct, @options)";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ln", question.LessonNumber);
+                    cmd.Parameters.AddWithValue("@course", course);
+                    cmd.Parameters.AddWithValue("@text", question.QuestionText);
+                    cmd.Parameters.AddWithValue("@type", question.QuestionType);
+                    cmd.Parameters.AddWithValue("@correct", question.CorrectAnswer);
+                    cmd.Parameters.AddWithValue("@options", question.Options ?? (object)DBNull.Value);
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

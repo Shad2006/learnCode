@@ -9,13 +9,15 @@ namespace LearnCodeWPF
         private int lessonNumber;
         private string course;
         private Database db;
-        public LessonWindow(int lessonNum, string crs)
+        public string userName;
+        public LessonWindow(int lessonNum, string crs, string username)
         {
             InitializeComponent();
             lessonNumber = lessonNum;
             course = crs;
             db = new Database();
             LoadLesson();
+            userName = username;
         }
         private void LoadLesson()
         {
@@ -77,12 +79,12 @@ namespace LearnCodeWPF
         }
         private void StartQuiz_Click(object sender, RoutedEventArgs e)
         {
-            QuizWindow quiz = new QuizWindow(lessonNumber, course);
+            QuizWindow quiz = new QuizWindow(lessonNumber, course, userName);
             quiz.Show();
             this.Close();}
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CourseWindow courseWindow = new CourseWindow(course);
+            CourseWindow courseWindow = new CourseWindow(course, userName);
             courseWindow.Show();
             this.Close();
         }

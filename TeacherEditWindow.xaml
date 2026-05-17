@@ -1,0 +1,105 @@
+﻿<Window x:Class="LearnCodeWPF.TeacherEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        Title="Редактирование уроков" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,15">
+            <TextBlock Text="Курс:" VerticalAlignment="Center" Margin="5"/>
+            <ComboBox x:Name="cmbCourse" Width="100" SelectionChanged="CmbCourse_SelectionChanged">
+                <ComboBoxItem Content="C#"/>
+                <ComboBoxItem Content="C++"/>
+                <ComboBoxItem Content="PHP"/>
+            </ComboBox>
+            <TextBlock Text="Урок:" VerticalAlignment="Center" Margin="15,0,5,0"/>
+            <ComboBox x:Name="cmbLesson" Width="200" SelectionChanged="CmbLesson_SelectionChanged"/>
+            <Button x:Name="btnNewLesson" Content="Новый урок" Margin="20,0,0,0" Background="#FF9600"
+                    Foreground="White" Padding="10,5" Click="BtnNewLesson_Click"/>
+        </StackPanel>
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="#CCC" BorderThickness="1" Padding="10" Margin="0,0,15,15">
+            <StackPanel>
+                <TextBlock Text="Название урока" FontWeight="Bold"/>
+                <TextBox x:Name="txtLessonName" Margin="0,5,0,10"/>
+                <TextBlock Text="HTML теория урока" FontWeight="Bold"/>
+                <StackPanel Margin="0,0,0,15">
+                    <TextBlock Text="Теория урока (редактируемый HTML)" FontWeight="Bold"/>
+
+                    <WrapPanel Margin="0,5,0,5">
+                        <Button Content="Жирный" Tag="bold" Click="FormatButton_Click" Padding="8,4" Margin="2"/>
+                        <Button Content="Курсив" Tag="italic" Click="FormatButton_Click" Padding="8,4" Margin="2"/>
+                        <Button Content="Подчёркнутый" Tag="underline" Click="FormatButton_Click" Padding="8,4" Margin="2"/>
+                        <Button Content="Список" Tag="insertunorderedlist" Click="FormatButton_Click" Padding="8,4" Margin="2"/>
+                        <Button Content="code" Tag="code" Click="CodeButton_Click" Padding="8,4" Margin="2"/>
+                        <Button Content="Нумер. список" Tag="insertorderedlist" Click="FormatButton_Click" Padding="8,4" Margin="2"/>
+                        <ComboBox x:Name="cmbColor" Width="70" SelectionChanged="ColorChanged" Margin="2">
+                            <ComboBoxItem Content="Чёрный" Tag="black"/>
+                            <ComboBoxItem Content="Красный" Tag="red"/>
+                            <ComboBoxItem Content="Синий" Tag="blue"/>
+                            <ComboBoxItem Content="Зелёный" Tag="green"/>
+                        </ComboBox>
+                    </WrapPanel>
+
+                    <WindowsFormsHost Height="300">
+                        <wf:WebBrowser x:Name="webBrowser" />
+                    </WindowsFormsHost>
+                </StackPanel>
+                <CheckBox x:Name="chkLocked" Content="Урок заблокирован" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Вопросы — правая колонка -->
+        <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <Border BorderBrush="#CCC" BorderThickness="1" Padding="10">
+                <StackPanel>
+                    <TextBlock Text="Вопросы урока" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                    <ListBox x:Name="lbQuestions" Height="200" DisplayMemberPath="QuestionText"
+                             SelectionChanged="LbQuestions_SelectionChanged"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                        <Button x:Name="btnSaveQuestion" Content="Сохранить вопрос" Background="#58CC02"
+                                Foreground="White" Padding="10,5" Click="BtnSaveQuestion_Click"/>
+                        <Button x:Name="btnNewQuestion" Content="Новый вопрос" Margin="10,0,0,0"
+                                Background="#FF9600" Foreground="White" Padding="10,5" Click="BtnNewQuestion_Click"/>
+                    </StackPanel>
+                    <Border BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,10,0,0" Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Редактирование вопроса" FontWeight="Bold"/>
+                            <TextBlock Text="Тип вопроса (по-русски):" Margin="0,10,0,0"/>
+                            <ComboBox x:Name="cmbQuestionType" SelectedIndex="0" SelectionChanged="CmbQuestionType_SelectionChanged">
+                                <ComboBoxItem Content="Одиночный выбор"/>
+                                <ComboBoxItem Content="Множественный выбор"/>
+                                <ComboBoxItem Content="Текстовый ответ"/>
+                                <ComboBoxItem Content="Программный код"/>
+                            </ComboBox>
+
+                            <TextBlock Text="Текст вопроса:" Margin="0,10,0,0"/>
+                            <TextBox x:Name="txtQuestionText" Height="60" TextWrapping="Wrap"/>
+
+                            <TextBlock x:Name="lblHint" Text="" Foreground="Gray" FontStyle="Italic" Margin="0,5,0,0"/>
+
+                            <TextBlock Text="Варианты ответов (каждый на новой строке):" Margin="0,10,0,0"/>
+                            <TextBox x:Name="txtOptions" Height="80" TextWrapping="Wrap" AcceptsReturn="True"/>
+                            <TextBlock Text="Правильный ответ (для кода – ожидаемый вывод):" Margin="0,10,0,0"/>
+                            <TextBox x:Name="txtCorrectAnswer" Height="40"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button x:Name="btnSaveLesson" Content="Сохранить урок" Background="#58CC02" Foreground="White"
+                    Padding="15,8" Click="BtnSaveLesson_Click"/>
+            <Button x:Name="btnFinish" Content="Завершить редактирование" Margin="10,0,0,0" 
+                    Background="#FF4B4B" Foreground="White" Padding="15,8" Click="BtnFinish_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

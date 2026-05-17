@@ -13,17 +13,19 @@ namespace LearnCodeWPF
         private int currentQuestion = 0;
         private int score = 0;
         public string course;
+        public string userFIO;
         private int lessonNumber;
         private List<RadioButton> singleChoiceButtons = new List<RadioButton>();
         private List<CheckBox> multipleChoiceBoxes = new List<CheckBox>();
         private FrameworkElement textAnswer;
-        public QuizWindow(int lessonNum, string crs)
+        public QuizWindow(int lessonNum, string crs, string username)
         {
             lessonNumber = lessonNum;
             course = crs;
             InitializeComponent();
             LoadQuestions();
             LoadQuestion();
+            userFIO = username;
         }
         private List<Question> questions; 
         private void LoadQuestions()
@@ -320,8 +322,10 @@ namespace LearnCodeWPF
             };
             button.Click += (s, e) =>
             {
+                Database db1 = new Database();
+                db.NextLesson(course, lessonNumber);
                 resultWindow.Close();
-                CourseWindow courseWindow = new CourseWindow(course);
+                CourseWindow courseWindow = new CourseWindow(course, userFIO);
                 courseWindow.Show();
                 this.Close();
             };
@@ -334,7 +338,7 @@ namespace LearnCodeWPF
         }
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            LessonWindow lessonWindow = new LessonWindow(lessonNumber, course);
+            LessonWindow lessonWindow = new LessonWindow(lessonNumber, course, userFIO);
             lessonWindow.Show();
             this.Close();
         }}}

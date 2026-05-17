@@ -1,4 +1,4 @@
-﻿<Window x:Class="LearnCode.RegWindow"
+﻿<Window x:Class="LearnCode.QueryStudent"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Авторизация"
@@ -89,8 +89,13 @@
                 Width="400"
                 Margin="50">
                 <StackPanel HorizontalAlignment="Center" Margin="0,0,0,40"/>
-                <TextBlock Text="Добавить ученика в систему"
+                <TextBlock Text="Приступая к обучению..."
                     FontSize="24"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource TextGray}"
+                    Margin="0,0,0,30"/>
+                <TextBlock Text="Пожалуйста, представься, чтобы результаты были твоими"
+                    FontSize="12"
                     FontWeight="Bold"
                     Foreground="{StaticResource TextGray}"
                     Margin="0,0,0,30"/>
@@ -102,9 +107,11 @@
                     <TextBox x:Name="passwordfield" Style="{StaticResource InputField}"
                         Margin="0,0,0,15"/>
                 </StackPanel>
-                <Button Content="Зарегистрировать"
+                <Button  x:Name="auth" Content="Войти"
                     Style="{StaticResource ButtonPrimary}"
-                    Margin="0,0,0,20" Click="Button_Click"/>
+                    Margin="0,0,0,20" Click="Button_Click" Padding="20, 20, 20, 20"/>
+                <TextBlock FontSize="10px" Text="или"></TextBlock>
+                <Button Background="DarkTurquoise" Foreground="White" Content="Я решаю для себя/дома, авторизация не нужна, имя пользователя хакер"></Button>
                 <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Margin="0,0,0,25"/>
