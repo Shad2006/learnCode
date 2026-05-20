@@ -1,0 +1,38 @@
+﻿<Window x:Class="LearnCodeWPF.TeacherMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Кабинет учителя" Height="600" Width="900"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#58CC02"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Статистика по ученикам" FontSize="22" FontWeight="Bold" Margin="10,77,-10,315" Grid.Row="1"/>
+
+        <DataGrid x:Name="dgStudents" Grid.Row="1" AutoGenerateColumns="False" 
+                  AlternatingRowBackground="#F9F9F9" BorderBrush="#E0E0E0" Margin="0,137,0,0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Имя ученика" Binding="{Binding StudentName}" Width="200"/>
+                <DataGridTextColumn Header="Язык" Binding="{Binding Course}" Width="100"/>
+                <DataGridTextColumn Header="Пройдено уроков" Binding="{Binding CompletedLessons}" Width="150"/>
+                <DataGridTextColumn Header="Средний балл" Binding="{Binding AverageScore}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="addUser" Content="Добавить ученика" Grid.Row="2" Background="Aquamarine" Margin="0,20,441,0" Click="AddUser_Click"/>
+        <Button x:Name="btnEditContent" Grid.Row="2" Content="Перейти к редактированию уроков и вопросов" 
+                Style="{StaticResource ModernButton}" Margin="441,20,0,0" Click="BtnEditContent_Click"/>
+    </Grid>
+</Window>

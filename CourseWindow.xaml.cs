@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -9,7 +10,6 @@ namespace LearnCodeWPF
     public partial class CourseWindow : Window
     {
         private string course;
-        private List<LessonViewModel> lessons = new List<LessonViewModel>();
         private Color[] lessonColors = new Color[]
         {
             Color.FromRgb(88, 204, 2),
@@ -21,32 +21,57 @@ namespace LearnCodeWPF
             Color.FromRgb(255, 75, 75),
             Color.FromRgb(255, 200, 0)
         };
-        public CourseWindow(string selectedCourse)
+        public ObservableCollection<LessonViewModel> Lessons { get; set; }
+        public string CourseTitle { get; set; }
+        public string UserFIO { get; set; } = "Хакер";
+        public string ProgressWidth { get; set; } = "";
+        public string ProgressPercent { get; set; } = "";
+        public string ProgressDetails { get; set; } = "";
+
+        public CourseWindow(string selectedCourse, string userName)
         {
             course = selectedCourse;
+            CourseTitle = course;
+            Lessons = new ObservableCollection<LessonViewModel>();
             InitializeComponent();
+            DataContext = this;  
             LoadData();
+            if (userName != "")
+            {
+                UserFIO = userName;
+            }
         }
         private void LoadData()
         {
             Database db = new Database();
             var lessonsData = db.GetLessons(course);
-
             foreach (var lesson in lessonsData)
             {
-                bool isLocked = (bool)lesson["is_locked"];
-                lessons.Add(new LessonViewModel
+                if ((lesson.IsLocked) == true)
                 {
-                    LessonNumber = (int)lesson["lesson_number"],
-                    LessonName = lesson["lesson_name"].ToString(),
-                    IsLocked = isLocked,
-                    Color = new SolidColorBrush(lessonColors[(int)lesson["lesson_number"] % lessonColors.Length]),
-                    TextColor = isLocked ? Brushes.Gray : Brushes.Black,
-                    Icon = GetProgrammingIcon(lesson["lesson_name"].ToString())
-                });
+                    Lessons.Add(new LessonViewModel
+                    {
+                        LessonNumber = lesson.LessonNumber,
+                        LessonName = lesson.LessonName,
+                        TextColor = Brushes.Black,
+                        IsLocked = lesson.IsLocked,
+                        Color = Brushes.Gray,
+                        Icon = GetProgrammingIcon(lesson.LessonName)
+                    });
+                }
+                else
+                {
+                    Lessons.Add(new LessonViewModel
+                    {
+                        LessonNumber = lesson.LessonNumber,
+                        LessonName = lesson.LessonName,
+                        TextColor = Brushes.Black,
+                        IsLocked = lesson.IsLocked,
+                        Color = new SolidColorBrush(lessonColors[lesson.LessonNumber % lessonColors.Length]),
+                        Icon = GetProgrammingIcon(lesson.LessonName)
+                    });
+                }
             }
-
-            LessonsList.ItemsSource = lessons;
         }
 
         private string GetProgrammingIcon(string lessonName)
@@ -67,14 +92,33 @@ namespace LearnCodeWPF
             else if (lowerName.Contains("практик")) return "💻";
             else return "λ";
         }
-
         private void Logo_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
+            StartWindow win = new StartWindow();
+            win.Show();
             this.Close();
         }
-
+        private void Projects_Click(object sender, MouseButtonEventArgs e)
+        {
+            ProjectsWindow proj = new ProjectsWindow();
+            proj.Show();
+            this.Close();
+        }
+        private void LessonItem_Click(object sender, MouseButtonEventArgs e)
+        {
+            var border = sender as Border;
+            var lesson = border?.DataContext as LessonViewModel;
+            if (lesson.IsLocked == true) { }
+            else
+            {
+                if (lesson != null)
+                {
+                    LessonWindow lessonWindow = new LessonWindow(lesson.LessonNumber, course, UserFIO);
+                    lessonWindow.Show();
+                    this.Close();
+                }
+            }
+        }
         private void NavItem_MouseEnter(object sender, MouseEventArgs e)
         {
             var border = sender as Border;
@@ -83,7 +127,6 @@ namespace LearnCodeWPF
                 border.Background = new SolidColorBrush(Color.FromRgb(247, 247, 247));
             }
         }
-
         private void NavItem_MouseLeave(object sender, MouseEventArgs e)
         {
             var border = sender as Border;
@@ -92,42 +135,26 @@ namespace LearnCodeWPF
                 border.Background = Brushes.Transparent;
             }
         }
-
         private void ContinueButton_Click(object sender, RoutedEventArgs e)
         {
-            Database db = new Database();
-            var lessonsData = db.GetLessons(course);
-            foreach (var lesson in lessonsData)
+            if (Lessons.Count > 0)
             {
-                if (!(bool)lesson["is_locked"])
-                {
-                    int lessonNumber = (int)lesson["lesson_number"];
-                    LessonWindow lessonWindow = new LessonWindow(lessonNumber, course);
-                    lessonWindow.Show();
-                    this.Close();
-                    return;
-                }
-            }
-
-            if (lessonsData.Length > 0)
-            {
-                LessonWindow lessonWindow = new LessonWindow(1, course);
+                int lessonNumber = Lessons[0].LessonNumber;
+                LessonWindow lessonWindow = new LessonWindow(lessonNumber, course, UserFIO);
                 lessonWindow.Show();
                 this.Close();
             }
         }
-
         private void LessonItem_MouseEnter(object sender, MouseEventArgs e)
         {
             var border = sender as Border;
-            var lesson = border.DataContext as LessonViewModel;
+            var lesson = border?.DataContext as LessonViewModel;
 
             if (border != null && lesson != null && !lesson.IsLocked)
             {
                 border.Background = new SolidColorBrush(Color.FromRgb(247, 247, 247));
             }
         }
-
         private void LessonItem_MouseLeave(object sender, MouseEventArgs e)
         {
             var border = sender as Border;
@@ -137,7 +164,6 @@ namespace LearnCodeWPF
             }
         }
     }
-
     public class LessonViewModel
     {
         public int LessonNumber { get; set; }

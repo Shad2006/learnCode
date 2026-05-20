@@ -21,20 +21,36 @@ namespace LearnCodeUWP
     /// </summary>
     public partial class SelectLanguageWindow : Window
     {
-        public SelectLanguageWindow()
+        private string user;
+        public SelectLanguageWindow(string login)
         {
             InitializeComponent();
-        }
-
-        
-        
-
+            user = login;
+    }
         private void Select_php(object sender, RoutedEventArgs e)
         {
-            CourseWindow php = new CourseWindow("php");
+            CourseWindow php = new CourseWindow("PHP", user);
             php.Show();
             this.Close();
         }
+        private void Csharp_Click(object sender, RoutedEventArgs e)
+        {
+            CourseWindow scharp = new CourseWindow("C#", user);
+            scharp.Show();
+            this.Close();
+        }
+        private void Cpp_Click(object sender, RoutedEventArgs e)
+        {
+            CourseWindow scharp = new CourseWindow("C++", user);
+            scharp.Show();
+            this.Close();
+        }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            CourseWindow scharp = new CourseWindow("C++", user);
+            scharp.Show();
+            this.Close();
+        }
     }
 }

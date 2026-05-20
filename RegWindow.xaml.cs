@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
+using LearnCodeWPF;
 namespace LearnCode
 {
     /// <summary>
@@ -19,10 +19,24 @@ namespace LearnCode
     /// </summary>
     public partial class RegWindow : Window
     {
+        private Database db;
+        private string login;
+        private string password;
         public RegWindow()
         {
                 InitializeComponent();
-            
+            db = new Database();
+        }
+        public void registration()
+        {
+            string FIO = loginfield.Text;
+            string cod = passwordfield.Text;
+            db.AddStudent(FIO, cod);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            registration();
         }
     }
 }

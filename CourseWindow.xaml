@@ -40,24 +40,15 @@
                 BorderBrush="{StaticResource ColorSwan}" 
                 BorderThickness="0,0,2,0">
             <StackPanel>
-                <Button Content="LearnCode" 
-                        FontSize="24" 
-                        FontWeight="Bold"
-                        Foreground="{StaticResource ColorEel}"
+                <Button
                         HorizontalAlignment="Left"
                         Margin="40,30,0,40"
-                        Background="Transparent"
-                        BorderThickness="0"
                         Click="Logo_Click">
+                    
                     <Button.ContentTemplate>
                         <DataTemplate>
                             <StackPanel>
-                                <TextBlock Text="LearnCode" 
-                                           FontSize="20"
-                                           Foreground="{StaticResource ColorEel}"/>
-                                <TextBlock Text="программирование" 
-                                           FontSize="9"
-                                           Foreground="{StaticResource ColorMacaw}"/>
+                                <Image  Source="/images/step.png" Width="100px"></Image>
                             </StackPanel>
                         </DataTemplate>
                     </Button.ContentTemplate>
@@ -104,12 +95,14 @@
                             Height="45"
                             Margin="0,0,0,30"
                             MouseEnter="NavItem_MouseEnter"
-                            MouseLeave="NavItem_MouseLeave">
-                        <TextBlock Text="📁 Проекты" 
+                            MouseLeave="NavItem_MouseLeave"
+                            >
+                        <Button Content="📁 Проекты" 
                                    FontSize="16"
                                    Foreground="{StaticResource ColorHare}"
-                                   VerticalAlignment="Center"
-                                   Margin="10,0"/>
+                                   VerticalAlignment="Bottom"
+                                   Margin="10,0,10,10"
+                                   />
                     </Border>
                     <Border Background="{StaticResource ColorPolar}" 
                             CornerRadius="8" 
@@ -202,7 +195,7 @@
                                 <TextBlock Text="1/3 задач решено" 
                                            FontSize="10"
                                            Foreground="{StaticResource ColorWolf}"
-                                           Margin="210,0"/>
+                                           Margin="210,0" Height="13" VerticalAlignment="Top"/>
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -212,10 +205,10 @@
                             CornerRadius="8" 
                             BorderBrush="#FBE56D" 
                             BorderThickness="2"
-                            Margin="0,0,0,20"
+                            Margin="0,0,0,0"
                             Height="100">
                         <Grid>
-                            <TextBlock Text="🔥" 
+                            <TextBlock Text="" 
                                        FontSize="28"
                                        VerticalAlignment="Center"
                                        Margin="20,0"/>
@@ -233,8 +226,6 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-
-                    <!-- Continue Button -->
                     <Button Content="НАЧАТЬ УРОК ПРОГРАММИРОВАНИЯ" 
                             Background="{StaticResource ColorOwl}"
                             Foreground="{StaticResource ColorSnow}"
@@ -267,28 +258,34 @@
                                                 Padding="10,5"
                                                 Margin="0,0,0,20"
                                                 MouseEnter="LessonItem_MouseEnter"
-                                                MouseLeave="LessonItem_MouseLeave">
+                                                MouseLeave="LessonItem_MouseLeave"
+                                                MouseLeftButtonDown="LessonItem_Click">
+
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="60"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="60"/>
                                                 </Grid.ColumnDefinitions>
-
                                                 <Ellipse Grid.Column="0" 
-                                                         Width="60" 
-                                                         Height="60"
-                                                         Fill="{Binding Color}">
+         Width="60" 
+         Height="60"
+         Fill="{Binding Color}">
+                                                    <Ellipse.RenderTransform>
+                                                        <ScaleTransform x:Name="EllipseScale" ScaleX="1" ScaleY="1"/>
+                                                    </Ellipse.RenderTransform>
                                                     <Ellipse.Triggers>
                                                         <EventTrigger RoutedEvent="MouseDown">
                                                             <BeginStoryboard>
                                                                 <Storyboard>
-                                                                    <DoubleAnimation To="0.9" 
-                                                                                     Duration="0:0:0.1"
-                                                                                     Storyboard.TargetProperty="ScaleX"/>
-                                                                    <DoubleAnimation To="0.9" 
-                                                                                     Duration="0:0:0.1"
-                                                                                     Storyboard.TargetProperty="ScaleY"/>
+                                                                    <DoubleAnimation Storyboard.TargetName="EllipseScale" 
+                                     Storyboard.TargetProperty="ScaleX" 
+                                     To="0.9" 
+                                     Duration="0:0:0.1"/>
+                                                                    <DoubleAnimation Storyboard.TargetName="EllipseScale" 
+                                     Storyboard.TargetProperty="ScaleY" 
+                                     To="0.9" 
+                                     Duration="0:0:0.1"/>
                                                                 </Storyboard>
                                                             </BeginStoryboard>
                                                         </EventTrigger>
