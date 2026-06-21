@@ -1,0 +1,248 @@
+﻿<Window x:Class="LearnCodeWPF.TeacherWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+xmlns:wpf="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+        
+        Title="Режим учителя – LearnCode" Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI, Sans-Serif">
+    <Window.Resources>
+        <Style x:Key="EmeraldButton" TargetType="Button">
+            <Setter Property="Background" Value="#58CC02"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#46A000"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#3D8C00"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource EmeraldButton}">
+            <Setter Property="Background" Value="#FF4B4B"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E03A3A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#F9F9F9"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TabControl Grid.Row="0" FontSize="14" Margin="0,0,0,10">
+            <TabItem Header="Уроки">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0" Background="#F7F7F7" Padding="8" CornerRadius="8" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Курс:" VerticalAlignment="Center" Margin="5"/>
+                            <ComboBox x:Name="cmbCourseLessons" Width="100" SelectionChanged="CmbCourseLessons_SelectionChanged" Background="White">
+                                <ComboBoxItem Content="C#"/>
+                                <ComboBoxItem Content="C++"/>
+                                <ComboBoxItem Content="PHP"/>
+                            </ComboBox>
+                            <Button Content="Добавить урок" Style="{StaticResource EmeraldButton}" Margin="20,0,0,0" Click="AddLesson_Click"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                                <Button Content="Перейти к вопросам" Background="DarkCyan"  Foreground="White" Click="SaveLessonChanges_Click" Width="150"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <DataGrid x:Name="dgLessons" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="False" 
+                              SelectionChanged="DgLessons_SelectionChanged" Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="№" Binding="{Binding LessonNumber}" Width="60"/>
+                            <DataGridTextColumn Header="Название" Binding="{Binding LessonName}" Width="200"/>
+                            <DataGridTextColumn Header="Теория (HTML)" Binding="{Binding TheoryText}" Width="*" />
+                            <DataGridCheckBoxColumn Header="Заблок." Binding="{Binding IsLocked}" Width="70"/>
+                            <DataGridTemplateColumn Header="Действия" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="редактировать" Style="{StaticResource EmeraldButton}" Click="EditLesson_Click" Tag="{Binding}" Margin="2,0" Padding="8,4"/>
+                                            <Button Content="удалить" Style="{StaticResource DangerButton}" Click="DeleteLesson_Click" Tag="{Binding}" Margin="2,0" Padding="8,4"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Border Grid.Row="2" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Padding="10" Background="#FEFEFE">
+                        <StackPanel Margin="0,0,0,-93">
+                            <TextBlock Text="Редактирование урока" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="300"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Номер:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtLessonNumber" Grid.Row="0" Grid.Column="1" Margin="5" Width="80" HorizontalAlignment="Left"/>
+
+                                <TextBlock Text="Название:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtLessonName" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                                <TextBlock Text="Заблокирован:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                                <CheckBox x:Name="chkIsLocked" Grid.Row="2" Grid.Column="1" Margin="5" VerticalAlignment="Center"/>
+                                <TextBlock Text="HTML теория:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Top" Margin="5,8,0,0"/>
+                                <StackPanel Grid.Row="3" Grid.Column="1" Margin="5">
+                                    <WrapPanel Margin="0,0,0,5">
+                                        <Button Content="ЗАГОЛОВОК 1;" Style="{StaticResource EmeraldButton}" Click="InsertTag_Click" Tag="h1" Padding="8,4" FontWeight="Normal"/>
+                                        <Button Content="Заголовок 2" Style="{StaticResource EmeraldButton}" Click="InsertTag_Click" Tag="h2" Padding="8,4" FontWeight="Normal"/>
+                                        <Button Content="Абзац;" Style="{StaticResource EmeraldButton}" Click="InsertTag_Click" Tag="p" Padding="8,4" FontWeight="Normal"/>
+                                        <Button Content="&lt;pre&gt;&lt;code&gt;" Style="{StaticResource EmeraldButton}" Click="InsertPreCode_Click" Padding="8,4" FontWeight="Normal"/>
+                                        <Button Content="Список" Style="{StaticResource EmeraldButton}" Click="InsertList_Click" Padding="8,4" FontWeight="Normal"/>
+                                        <Button Content="👁️ Предпросмотр" Style="{StaticResource EmeraldButton}" Click="PreviewHtml_Click" Padding="8,4" FontWeight="Normal"/>
+                                    </WrapPanel>
+                                    <TextBox x:Name="txtTheoryText" Height="150" TextWrapping="Wrap" AcceptsReturn="True" 
+                                             VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12"
+                                             TextChanged="TxtTheoryText_TextChanged"/>
+                                </StackPanel>
+
+                                <TextBlock Text="Предпросмотр:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Top" Margin="5,8,0,0"/>
+                                <WindowsFormsHost Grid.Row="4" Grid.Column="1" Margin="5,5,5,64">
+                                    <wf:WebBrowser x:Name="webPreview" />
+                                </WindowsFormsHost>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="❓ Вопросы">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="29*"/>
+                        <ColumnDefinition Width="1137*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#F7F7F7" Padding="8" CornerRadius="8" Margin="0,0,0,94" Grid.ColumnSpan="2">
+                        <WrapPanel>
+                            <TextBlock Text="Курс:" VerticalAlignment="Center" Margin="5"/>
+                            <ComboBox x:Name="cmbCourseQuestions" Width="100" SelectionChanged="CmbCourseQuestions_SelectionChanged">
+                                <ComboBoxItem Content="C#"/>
+                                <ComboBoxItem Content="C++"/>
+                                <ComboBoxItem Content="PHP"/>
+                            </ComboBox>
+                            <TextBlock Text="Урок №:" Margin="15,0,5,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtLessonNumberFilter" Width="60" TextChanged="TxtLessonNumberFilter_TextChanged"/>
+                            <Button Content="➕ Добавить вопрос" Style="{StaticResource EmeraldButton}" Margin="20,0,0,0" Click="AddQuestion_Click"/>
+                        </WrapPanel>
+                    </Border>
+
+                    <DataGrid x:Name="dgQuestions" AutoGenerateColumns="False" IsReadOnly="False" Height="200"
+                    SelectionChanged="DgQuestions_SelectionChanged" Margin="0,55,0,94" Grid.ColumnSpan="2" Grid.RowSpan="2">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Урок" Binding="{Binding LessonNumber}" Width="60"/>
+                            <DataGridTextColumn Header="Текст вопроса" Binding="{Binding QuestionText}" Width="300"/>
+                            <DataGridTextColumn Header="Тип" Binding="{Binding QuestionType}" Width="100"/>
+                            <DataGridTextColumn Header="Правильный ответ" Binding="{Binding CorrectAnswer}" Width="150"/>
+                            <DataGridTextColumn Header="Варианты" Binding="{Binding Options}" Width="*"/>
+                            <DataGridTemplateColumn Header="Действия" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="✏️" Style="{StaticResource EmeraldButton}" Click="EditQuestion_Click" Tag="{Binding}" Padding="8,4"/>
+                                            <Button Content="🗑️" Style="{StaticResource DangerButton}" Click="DeleteQuestion_Click" Tag="{Binding}" Padding="8,4"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Форма редактирования вопроса -->
+                    <Border Grid.Row="1" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Padding="10" Background="#FEFEFE" Grid.ColumnSpan="2" Margin="0,126,0,84" Grid.RowSpan="2">
+                        <StackPanel>
+                            <TextBlock Text="✏️ Редактирование вопроса" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Урок №:" Grid.Row="0" Grid.Column="0"/>
+                                <TextBox x:Name="txtQLessonNumber" Grid.Row="0" Grid.Column="1" Margin="5" Width="80" HorizontalAlignment="Left"/>
+                                <TextBlock Text="Текст вопроса:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="0,5"/>
+                                <TextBox x:Name="txtQText" Grid.Row="1" Grid.Column="1" Height="60" TextWrapping="Wrap" Margin="5"/>
+                                <TextBlock Text="Тип:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="cmbQType" Grid.Row="2" Grid.Column="1" Margin="5" Width="120" HorizontalAlignment="Left">
+                                    <ComboBoxItem Content="text"/>
+                                    <ComboBoxItem Content="choice"/>
+                                    <ComboBoxItem Content="multiple"/>
+                                    <ComboBoxItem Content="code"/>
+                                </ComboBox>
+                                <TextBlock Text="Правильный ответ:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center"/>
+                                <TextBox x:Name="txtQCorrect" Grid.Row="3" Grid.Column="1" Margin="5"/>
+                                <TextBlock Text="Варианты (через |):" Grid.Row="4" Grid.Column="0" VerticalAlignment="Top" Margin="0,5"/>
+                                <TextBox x:Name="txtQOptions" Grid.Row="4" Grid.Column="1" Height="80" TextWrapping="Wrap" AcceptsReturn="True" Margin="5"/>
+                            </Grid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                                <Button Content="💾 Сохранить вопрос" Style="{StaticResource EmeraldButton}" Click="SaveQuestionChanges_Click" Width="150"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <Button Grid.Row="2" Content="Выйти из режима учителя" Style="{StaticResource DangerButton}" HorizontalAlignment="Right" Width="220" Margin="5" Click="ExitTeacherMode_Click"/>
+    </Grid>
+</Window>

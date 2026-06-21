@@ -4,14 +4,32 @@
         Title="Вопросы урока" 
         Height="700" Width="900"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
 
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="24,12"/>
+            <Setter Property="BorderThickness" Value="10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- Header -->
         <Border Grid.Row="0" Background="White">
             <Grid>
                 <Button Content="←" 
@@ -32,14 +50,10 @@
                            VerticalAlignment="Center"/>
             </Grid>
         </Border>
-
-        <!-- Content -->
         <Grid Grid.Row="1" Background="White">
             <StackPanel VerticalAlignment="Center" 
                         HorizontalAlignment="Center"
                         Width="800">
-
-                <!-- Question Panel -->
                 <StackPanel Margin="0,0,0,30">
                     <TextBlock x:Name="txtInstruction" 
                                Text="Выберите ответ."
@@ -61,10 +75,11 @@
                 <StackPanel Orientation="Horizontal" 
                             HorizontalAlignment="Center">
                     <Button Content="Пропустить" 
+                            Style="{StaticResource ModernButton}"
                             Background="White"
-                            Foreground="#58B368"
+                            Foreground="DarkCyan"
                             BorderBrush="#58B368"
-                            BorderThickness="1"
+                            BorderThickness="10"
                             FontSize="14"
                             Width="180" 
                             Height="50"
@@ -72,6 +87,7 @@
                             Click="SkipButton_Click"/>
 
                     <Button Content="Проверить" 
+                            Style="{StaticResource ModernButton}"
                             Background="#58B368"
                             Foreground="White"
                             FontSize="14" 

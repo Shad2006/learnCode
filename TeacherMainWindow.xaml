@@ -1,0 +1,117 @@
+﻿<Window x:Class="LearnCodeWPF.TeacherMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Кабинет учителя – SteP()"
+        Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        MinWidth="800" MinHeight="600">
+    <Window.Resources>
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#7AC70C"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="24,12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#FF4B4B"/>
+        </Style>
+        <Style x:Key="ActionButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#FF9600"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="← На главную"
+                    Background="Transparent"
+                    Foreground="#4B4B4B"
+                    BorderThickness="0"
+                    FontSize="14"
+                    Cursor="Hand"
+                    Click="BackButton_Click"
+                    Margin="0,0,20,0"/>
+            <TextBlock Text="Кабинет учителя" FontSize="22" FontWeight="Bold" Foreground="#4B4B4B"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+        <Border Grid.Row="1" Background="#F0F0F0" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Статус сервера:" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                    <TextBlock x:Name="serverStatusText" Text="Остановлен" Foreground="Red" Margin="0,0,20,0"/>
+                    <TextBlock Text="IP для учеников:" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                    <TextBlock x:Name="serverIpLabel" Text="не определен" Foreground="#333"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button x:Name="btnStartServer" Content="Запустить сервер" Style="{StaticResource ModernButton}"
+                            Click="StartServer_Click" Margin="5,-13,5,-8" Width="205"/>
+                    <Button x:Name="btnStopServer" Content="Остановить сервер" Style="{StaticResource DangerButton}"
+                            Click="StopServer_Click" IsEnabled="False" Margin="5,-13,5,-8" Width="174"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="2">
+            <TextBlock Text="Ученики и их прогресс" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <DataGrid x:Name="dgStudents" AutoGenerateColumns="False" AlternatingRowBackground="#F9F9F9" BorderBrush="#E0E0E0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ФИО ученика" Binding="{Binding StudentName}" Width="150"/>
+                    <DataGridTextColumn Header="Курс" Binding="{Binding Course}" Width="100"/>
+                    <DataGridTextColumn Header="Название урока" Binding="{Binding LessonName}" Width="250"/>
+                    <DataGridTextColumn Header="Балл" Binding="{Binding Score}" Width="80"/>
+                    <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="100"/>
+                    <DataGridTemplateColumn Header="Его ответы на этом уроке" Width="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="ViewAnswers" Focusable="False" Tag="{Binding Id}" Style="{StaticResource ActionButton}" Content="Смотреть"></Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Действия с его аккаунтом" Width="200">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Сменить пароль" Style="{StaticResource ActionButton}"
+                                            Click="ChangePassword_Click" Tag="{Binding StudentName}" Margin="2"
+                                            Width="100"/>
+                                    <Button Content="Удалить" Style="{StaticResource DangerButton}"
+                                            Click="DeleteStudent_Click" Tag="{Binding StudentName}" Margin="2"
+                                            Width="70"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button x:Name="addUser" Content="+Добавить ученика" MinHeight="50px" MinWidth="150px" Padding="0" Margin="10 10 10 10" Style="{StaticResource ModernButton}"
+                    Click="AddUser_Click" Width="208" />
+            <Button x:Name="btnEditContent" Content="Редактировать уроки и вопросы" Style="{StaticResource ModernButton}"
+                    Click="BtnEditContent_Click" Padding="0" Margin="10 10 10 10" Width="308"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,18 @@
+﻿<Window x:Class="LearnCodeWPF.ExplanationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ИИнфоорматик Степан объясняет иначе" Height="550" Width="700"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Глубокое обучение анализирует материал..." FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <RichTextBox x:Name="rtbSteps" IsReadOnly="True" FontFamily="Consolas" FontSize="12" Background="#F5F5F5"/>
+        </ScrollViewer>
+        <ProgressBar x:Name="progressBar" Grid.Row="2" Height="10" Margin="0,10,0,0" IsIndeterminate="False"/>
+    </Grid>
+</Window>
